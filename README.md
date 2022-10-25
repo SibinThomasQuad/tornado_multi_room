@@ -10,5 +10,9 @@
 
 5 message
 
-    message:room_id:all  to sent to all users in that room include room creater
-    message:room_id:others to sent to all users in that room exclude room creater
+    message:room_id:all 
+    
+    to sent to all users in that room include room creater
+    message:room_id:others
+    
+    to sent to all users in that room exclude room creater
