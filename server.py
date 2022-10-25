@@ -51,6 +51,7 @@ class web_socket_handler(ws.WebSocketHandler)   :
         server_obj                              = Debug()
         try                                     : 
             if(data_set[0] == 'create_room'):
+		"""Code to create the room"""
                 try                             : 
                     rooms.create_room(data_set[1],self)
                     server_obj.server_log("Room created ("+data_set[1]+")")
@@ -59,6 +60,7 @@ class web_socket_handler(ws.WebSocketHandler)   :
                     server_obj.server_log("Room creation failed ("+data_set[1]+")")
                     self.write_message("Room creation failed room ("+data_set[1]+")")
             elif(data_set[0] == 'join_room'):
+		"""Code to join the room"""
                 try                             : 
                     rooms.join_room(data_set[1],self)
                     server_obj.server_log("User joined to room ("+data_set[1]+")")
@@ -67,10 +69,12 @@ class web_socket_handler(ws.WebSocketHandler)   :
                     server_obj.server_log("Join to room failed ("+data_set[1]+")")
                     self.write_message("Join to room failed ("+data_set[1]+")")
             elif(data_set[0] == 'remove_room'):
+		"""Code to delete the room"""
                 rooms.remove_room(data_set[1])
                 server_obj.server_log("Room removed ("+data_set[1]+")")
                 self.write_message("Room removed ("+data_set[1]+")")
             elif(data_set[0] == 'leave_room'):
+		"""Code to exit the room"""
                 rooms.exit_room(data_set[1],self)
             else                                : 
                 users                           = rooms.get_room_members(data_set[1])
