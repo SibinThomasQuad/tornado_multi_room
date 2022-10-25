@@ -1,10 +1,14 @@
-import tornado.web
-import tornado.httpserver
-import tornado.ioloop
-import tornado.websocket as ws
-from tornado.options import define, options
+try:
+    import tornado.web
+    import tornado.httpserver
+    import tornado.ioloop
+    import tornado.websocket as ws
+    from tornado.options import define, options
+except:
+    print(" tornado not installed please install it (pip install tornado / pip3 install tornado)")
 import time
 import logging
+
 logging.basicConfig(filename                    = "server_log.log",
 					format                                     = '%(asctime)s %(message)s',
 					filemode                                   = 'w')
@@ -12,25 +16,40 @@ logger                                          = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 define('port', default=4041, help='port to listen on')
 ROOMS                                           = {}
+
 class Debug                                     : 
+    
     def server_log(self,message)                : 
         logger.debug(message)
+
 class Room                                      : 
+    """ This class is to perform all room operations """
+    
     def exit_room(self,room_id,user)            : 
+        """ This function is to exit from the room """
         user_list                               = ROOMS[str(room_id)]
         user_list.remove(user)
         ROOMS[str(room_id)]                     = user_list
+    
     def remove_room(self,room_id)               : 
+        """ This function is to delete the room """
         del ROOMS[str(room_id)]
+    
     def get_room_members(self,room_id)          : 
+        """ This funtion is to get the room members """
         members                                 = ROOMS[str(room_id)]
         return members
+    
     def create_room(self,room,member)           : 
+        """ This funtion is to create the room """
         ROOMS[str(room)]                        = [member]
+    
     def join_room(self,room,member)             : 
+        """ This function is to join the room """
         room_members                            = ROOMS[str(room)]
         room_members.append(member)
         ROOMS[str(room)]                        = room_members
+
 class web_socket_handler(ws.WebSocketHandler)   : 
     @classmethod
     def route_urls(cls)                         : 
@@ -44,6 +63,7 @@ class web_socket_handler(ws.WebSocketHandler)   :
         self.simple_init()
         #print("[+] New client connected")
         self.write_message("You are connected")
+    
     def on_message(self, message)               : 
         message_decoded                         = message
         data_set                                = message_decoded.split(":")
@@ -51,7 +71,7 @@ class web_socket_handler(ws.WebSocketHandler)   :
         server_obj                              = Debug()
         try                                     : 
             if(data_set[0] == 'create_room'):
-		"""Code to create the room"""
+		
                 try                             : 
                     rooms.create_room(data_set[1],self)
                     server_obj.server_log("Room created ("+data_set[1]+")")
@@ -60,7 +80,7 @@ class web_socket_handler(ws.WebSocketHandler)   :
                     server_obj.server_log("Room creation failed ("+data_set[1]+")")
                     self.write_message("Room creation failed room ("+data_set[1]+")")
             elif(data_set[0] == 'join_room'):
-		"""Code to join the room"""
+		
                 try                             : 
                     rooms.join_room(data_set[1],self)
                     server_obj.server_log("User joined to room ("+data_set[1]+")")
@@ -69,12 +89,12 @@ class web_socket_handler(ws.WebSocketHandler)   :
                     server_obj.server_log("Join to room failed ("+data_set[1]+")")
                     self.write_message("Join to room failed ("+data_set[1]+")")
             elif(data_set[0] == 'remove_room'):
-		"""Code to delete the room"""
+		
                 rooms.remove_room(data_set[1])
                 server_obj.server_log("Room removed ("+data_set[1]+")")
                 self.write_message("Room removed ("+data_set[1]+")")
             elif(data_set[0] == 'leave_room'):
-		"""Code to exit the room"""
+		
                 rooms.exit_room(data_set[1],self)
             else                                : 
                 users                           = rooms.get_room_members(data_set[1])
@@ -100,8 +120,10 @@ class web_socket_handler(ws.WebSocketHandler)   :
     def on_close(self)                          : 
         print("connection is closed")
         #self.stop()
+    
     def check_origin(self, origin)              : 
         return True
+
 def initiate_server()                           : 
     server_obj                                  = Debug()
     print("[+] Server Starting...")
@@ -117,5 +139,6 @@ def initiate_server()                           :
         tornado.ioloop.IOLoop.instance().start()
     except                                      : 
         print("[-] Server Starting failed")
+
 if __name__ == '__main__':
     initiate_server()
