@@ -1,5 +1,14 @@
 # tornado_multi_room
 
+
+instalation
+
+clone this repo
+ 
+and install 
+
+pip install tornado
+
 1 Deploy server.py in to the server and take the public ip address and port of the server
 
 2 and connect client.py to server via socket (with the server ip and port)
